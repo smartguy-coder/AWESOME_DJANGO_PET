@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "awesome-django-pet"
+version = "0.1.0"
+description = ""
+authors = ["Василь Картичак <w.i.k.mailua@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "==3.11.8"
+django = "==5.0.3"
+django-extensions = "^3.2.3"
+djangorestframework = "==3.14.0"
+redis = {extras = ["hiredis"], version = "^5.0.2"}
+django-cacheops = "^7.0.2"
+drf-spectacular = "^0.27.1"
+celery = "^5.3.6"
+djangorestframework-simplejwt = "^5.3.1"
+sentry-sdk = "^1.41.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.2"
+flake8 = "^7.0.0"
+django-debug-toolbar = "^4.3.0"
+black = "^24.2.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

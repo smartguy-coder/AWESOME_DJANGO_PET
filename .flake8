@@ -1,3 +1,7 @@
 [flake8]
-exclude = .venv
+exclude =
+    .venv,
+    trash.py
 max-line-length = 120
+doctests = True
+statistics = True

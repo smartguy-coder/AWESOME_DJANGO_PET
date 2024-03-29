@@ -5,6 +5,7 @@ site_name: DJANGO PROJECT
 nav:
   - About: index.md
   - Used Ports: used_ports.md
+  - Storages: storages.md
 
 theme:
   name: material

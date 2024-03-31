@@ -11,3 +11,8 @@ foo@bar:~$ docker exec -it postgres_database bash
 postgres# 
 ```
 
+Create Postgres shell using Django + Makefile
+```shell
+foo@bar:~$ make database-shell
+```
+

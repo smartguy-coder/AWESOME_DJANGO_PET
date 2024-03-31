@@ -8,14 +8,13 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1
 
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
-    postgresql-client libc-dev build-base postgresql-dev linux-headers gcc gettext openssh-client && \
+    postgresql-client libc-dev build-base postgresql-dev linux-headers gcc gettext openssh-client curl && \
     pip install --upgrade pip && pip install --no-cache-dir poetry
 
 
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
-
 
 COPY auto_app /app
 

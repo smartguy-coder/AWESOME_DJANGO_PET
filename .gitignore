@@ -160,3 +160,6 @@ cython_debug/
 .idea/
 
 /trash.py
+
+/static
+/auto_app/static

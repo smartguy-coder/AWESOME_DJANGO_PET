@@ -48,3 +48,68 @@ install: # make install package='redis[hiredis]'
 install-dev:  # make install-dev package='pytest'
 	poetry add ${package} --group dev
 	poetry install
+
+################## DOCKER CONTAINERS ##################
+## FOR DJANGO
+
+.PHONY: static
+static:
+	docker-compose run --rm  web-app sh -c "python manage.py collectstatic --no-input"
+
+.PHONY: migrations
+migrations:
+	docker-compose run --rm  web-app sh -c "python manage.py makemigrations"
+
+.PHONY: migrate
+migrate:
+	docker-compose run --rm  web-app sh -c "python manage.py migrate"
+
+.PHONY: su  # create superuser
+su:
+	docker-compose run --rm  web-app sh -c "python manage.py createsuperuser"
+
+.PHONY: dump
+dump:
+	docker-compose run --rm  web-app sh -c "python manage.py dumpdata > dump.json"
+
+.PHONY: load
+load:
+	docker-compose run --rm  web-app sh -c "python manage.py loaddata dump.json"
+
+.PHONY: clean-database
+clean-database:
+	docker-compose run --rm  web-app sh -c "python manage.py flush"
+
+.PHONY: up
+up: migrations migrate static
+	docker-compose up
+
+.PHONY: newapp
+newapp:
+	docker-compose run --rm  web-app sh -c "python manage.py startapp $(app)"
+
+.PHONY: shell
+shell:
+	docker-compose run --rm  web-app sh -c "python manage.py shell"
+
+
+## FOR POSTGRES
+.PHONY: shell-postgres
+shell-postgres:
+	@echo "Read more in the documentation"
+	docker exec -it postgres_database bash
+
+.PHONY: database-shell
+database-shell:
+	docker-compose run --rm  web-app sh -c "python manage.py dbshell"
+
+####################### TESTING #######################
+
+.PHONY: checks
+checks:
+	@echo "Start check🐿"
+	black .
+	isort .
+	flake8 .
+	#pytest -v -s --cov='.'
+	#coverage html --omit="*/test*" -d tests/coverage

@@ -103,6 +103,12 @@ shell-postgres:
 database-shell:
 	docker-compose run --rm  web-app sh -c "python manage.py dbshell"
 
+## FOR REDIS
+.PHONY: redis-cli
+redis-cli:
+	docker exec -it  redis sh
+
+
 ####################### TESTING #######################
 
 .PHONY: checks

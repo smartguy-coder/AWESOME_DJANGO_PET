@@ -37,7 +37,7 @@ services:
           memory: 4G
     networks:
       - main_network
-      - postgres
+      - postgres_network
 
   pgadmin:
     container_name: pgadmin_container
@@ -54,7 +54,9 @@ services:
           cpus: '0.5'
           memory: 1G
     networks:
-      - postgres
+      - postgres_network
+    depends_on:
+      - postgres_database
 
   web-app:
     build:
@@ -76,11 +78,14 @@ services:
       - "8000:8000"
     depends_on:
       - postgres_database
-    command: sh -c "gunicorn --bind 0.0.0.0:8000 settings.wsgi:application  --reload -w 4 --log-level info"  # no static
+      - redis
+    command: sh -c "gunicorn --bind 0.0.0.0:8000 settings.wsgi:application  --reload -w 4 --log-level info"
 #     or
-#    command: sh -c "python manage.py runserver 0.0.0.0:8000" # for development with static
+#    command: sh -c "python manage.py runserver 0.0.0.0:8000"
     networks:
       - main_network
+      - redis_network
+      - postgres_network
 
   nginx:
     image: nginx:alpine
@@ -96,11 +101,56 @@ services:
     networks:
       - main_network
 
+  redis:
+    image: redis:7.0.5-alpine
+    container_name: redis
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data   #  redis side we can see by command "CONFIG get dir" in cli
+#      - ./redis_data/redis.conf:/usr/local/etc/redis/redis.conf  # if we will use it in future
+    command: [ "redis-server", "--appendonly", "no", "--maxmemory", "100mb", "--maxmemory-policy", "allkeys-lru" ]
+    healthcheck:
+      test: ['CMD', "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    links:
+      - redis-commander
+      - redis-insight
+    networks:
+      - main_network
+      - redis_network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8081:8081"
+    networks:
+      - redis_network
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis-insight:/data
+    networks:
+      - redis_network
 
 networks:
   main_network:
     driver: bridge
-  postgres:
+  postgres_network:
+    driver: bridge
+  redis_network:
     driver: bridge
 
 volumes:
@@ -108,3 +158,4 @@ volumes:
     external: false
   pgadmin-data:
   static_volume:
+  redis-insight:

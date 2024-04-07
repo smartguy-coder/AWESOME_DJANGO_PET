@@ -10,6 +10,7 @@
 | Redis               |    6379     |       6379        |                                                          |
 | GUI Redis commander |    8081     |       8081        |                      quite popular                       |
 | GUI Redis insight   |    5540     |       5540        |                 with interesting metrics                 |
+| Celery Flower       |    5555     |       5555        |                                                          |
  
 :memo: go to /etc/hosts on Linux, MacOS or C:/Windows/System32/Drivers/etc/ on Windows 
 and set in bottom of the file *hosts*

@@ -1,8 +1,7 @@
 from settings.celery_app import app as celery_app
 
 
-
 @celery_app.task
-def log_test_data():
-    with open('logging.txt', 'a') as file:
-        file.write('5555\n')
+def some_regular_test_task():
+    print("some_regular_test_task is running")
+    return {"some_regular_test_task": "finished"}

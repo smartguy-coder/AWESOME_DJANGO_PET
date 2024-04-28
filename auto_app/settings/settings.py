@@ -135,8 +135,8 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BEAT_SCHEDULE = {
     "log_test_data_testing": {
         "task": "tasks.regular.regular_task.some_regular_test_task",
-        # "schedule": crontab(),
-        'schedule': 5.0,  # seconds
+        "schedule": crontab(),
+        # 'schedule': 5.0,  # seconds
         # 'schedule': timedelta(seconds=5),
         # 'args': (16, 16),
         # 'options': {

@@ -152,7 +152,7 @@ services:
     container_name: worker_a
     hostname: worker_a
     entrypoint: celery
-    command: -A settings.celery.app worker --loglevel=info
+    command: -A settings.celery_app.app worker --loglevel=info
     env_file: .env
     volumes:
       - ./auto_app:/app
@@ -171,7 +171,26 @@ services:
     container_name: worker_b
     hostname: worker_b
     entrypoint: celery
-    command: -A settings.celery.app worker --loglevel=info
+    command: -A settings.celery_app.app worker --loglevel=info
+    env_file: .env
+    volumes:
+      - ./auto_app:/app
+    depends_on:
+      - postgres_database
+      - redis
+    networks:
+      - redis_network
+      - postgres_network
+      - celery_network
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./auto_app/Dockerfile
+    container_name: celery_beat
+    hostname: celery_beat
+    entrypoint: celery
+    command: -A settings.celery_app.app beat --loglevel=info
     env_file: .env
     volumes:
       - ./auto_app:/app
@@ -190,7 +209,7 @@ services:
     container_name: flower
     hostname: flower
     entrypoint: celery
-    command: -A settings.celery.app flower
+    command: -A settings.celery_app.app flower
     volumes:
       - ./auto_app:/app
     depends_on:
@@ -205,6 +224,32 @@ services:
       - postgres_network
       - celery_network
 
+#  rabbit:
+#    image: rabbitmq:3-management
+#    container_name: rabbit
+#    hostname: rabbit
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=admin
+#      - RABBITMQ_DEFAULT_PASS=admin
+#      - RABBITMQ_DEFAULT_VHOST=/
+#    ports:
+#      - "5682:5672"
+#      - "15682:15672"
+#    networks:
+#      - shared_network
+#https://github.com/cagrias/django-rabbitmq-celery-docker-example/blob/master/mypubsub/celery.py
+#  worker:
+#    image: backend-image
+#    restart: on-failure
+#    command: >
+#      sh -c "wait-for backend:8080 &&
+#             celery worker -B -l info -A mypubsub.celery -s /tmp/celerybeat-schedule"
+#    depends_on:
+#      - backend
+#      - rabbit
+#      - db
+#    networks:
+#      - shared_network
 networks:
   main_network:
     driver: bridge

@@ -2,6 +2,7 @@ import datetime as dt
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,3 +125,22 @@ CACHES = {
 # CELERY
 CELERY_BROKER_URL = "redis://redis:6379/1"
 CELERY_RESULT_BACKEND = "redis://redis:6379/1"
+CELERY_IMPORTS = ("tasks",)
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    "log_test_data_testing": {
+        "task": "tasks.regular.regular_task.some_regular_test_task",
+        "schedule": crontab(),
+        # 'schedule': 5.0,  # seconds
+        # 'schedule': timedelta(seconds=5),
+        # 'args': (16, 16),
+        # 'options': {
+        #     'expires': 15.0,
+        # },
+    },
+}
